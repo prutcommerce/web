@@ -1,5 +1,6 @@
 module Pages.Products exposing (Model, Msg, page)
 
+import App.Products.Product exposing (product)
 import Gen.Params.Products exposing (Params)
 import Html exposing (..)
 import Html.Attributes as Attr
@@ -73,52 +74,11 @@ view model =
                 [ h2
                     [ Attr.class "text-2xl font-bold tracking-tight text-gray-900"
                     ]
-                    [ text "Customers also purchased" ]
+                    [ text "Here's a list of our products" ]
                 , div
                     [ Attr.class "mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8"
                     ]
-                    [ div
-                        [ Attr.class "group relative"
-                        ]
-                        [ div
-                            [ Attr.class "w-full min-h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:h-80 lg:aspect-none"
-                            ]
-                            [ img
-                                [ Attr.src "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
-                                , Attr.alt "Front of men's Basic Tee in black."
-                                , Attr.class "w-full h-full object-center object-cover lg:w-full lg:h-full"
-                                ]
-                                []
-                            ]
-                        , div
-                            [ Attr.class "mt-4 flex justify-between"
-                            ]
-                            [ div []
-                                [ h3
-                                    [ Attr.class "text-sm text-gray-700"
-                                    ]
-                                    [ a
-                                        [ Attr.href "#"
-                                        ]
-                                        [ span
-                                            [ Attr.attribute "aria-hidden" "true"
-                                            , Attr.class "absolute inset-0"
-                                            ]
-                                            []
-                                        , text "Basic Tee"
-                                        ]
-                                    ]
-                                , p
-                                    [ Attr.class "mt-1 text-sm text-gray-500"
-                                    ]
-                                    [ text "Black" ]
-                                ]
-                            , p
-                                [ Attr.class "text-sm font-medium text-gray-900"
-                                ]
-                                [ text "$35" ]
-                            ]
-                        ]
+                    [ product
                     ]
                 ]
             ]
