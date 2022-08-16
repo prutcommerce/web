@@ -6,7 +6,7 @@ import Html.Attributes as Attr
 
 className : String
 className =
-    "max-w-7xl h-full mx-auto py-12 px-4 sm:px-6 py-16 flex items-center justify-between"
+    "max-w-7xl h-full mx-auto px-4 sm:px-6 flex items-center justify-between"
 
 
 hero : List (Html msg) -> Html msg

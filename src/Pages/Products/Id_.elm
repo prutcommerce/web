@@ -1,5 +1,6 @@
 module Pages.Products.Id_ exposing (view)
 
+import App.Layout exposing (layout)
 import Html exposing (..)
 import Html.Attributes as Attr
 import View exposing (View)
@@ -93,4 +94,5 @@ view =
     , body =
         [ body
         ]
+            |> layout
     }

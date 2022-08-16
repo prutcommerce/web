@@ -6,7 +6,7 @@ import Html.Attributes as Attr
 
 className : String
 className =
-    "bg-gray-50 home-container"
+    "bg-gray-50 h-full"
 
 
 container : List (Html msg) -> Html msg
