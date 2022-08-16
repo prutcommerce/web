@@ -22,6 +22,7 @@
     "@parcel/transformer-sass": "2.6.2",
     "autoprefixer": "10.3.5",
     "chokidar-cli": "3.0.0",
+    "elm-format": "0.8.5",
     "elm-review": "2.7.3",
     "elm-spa": "6.0.4",
     "elm-test": "0.19.1-revision9",
