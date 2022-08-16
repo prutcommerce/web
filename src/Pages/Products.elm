@@ -1,6 +1,7 @@
 module Pages.Products exposing (Model, Msg, page)
 
 import App.Products.Product exposing (product)
+import App.Products.Type exposing (Product)
 import Gen.Params.Products exposing (Params)
 import Html exposing (..)
 import Html.Attributes as Attr
@@ -25,12 +26,13 @@ page shared req =
 
 
 type alias Model =
-    {}
+    { products : List Product
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( { products = [ { id = "PLMid", name = "PLMname", url = "https://helios-i.mashable.com/imagery/roundups/02WgXOqM1CuP8hpI4P2pqmV/hero-image.fill.size_1200x675.v1646435289.jpg" } ] }, Cmd.none )
 
 
 
@@ -78,8 +80,7 @@ view model =
                 , div
                     [ Attr.class "mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8"
                     ]
-                    [ product
-                    ]
+                    (List.map product model.products)
                 ]
             ]
         ]
