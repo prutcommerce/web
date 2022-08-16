@@ -5,6 +5,7 @@ import Effect exposing (Effect)
 import ElmSpa.Page
 import Gen.Params.Home_
 import Gen.Params.Products
+import Gen.Params.Products.Id_
 import Gen.Params.NotFound
 import Gen.Model as Model
 import Gen.Msg as Msg
@@ -12,6 +13,7 @@ import Gen.Route as Route exposing (Route)
 import Page exposing (Page)
 import Pages.Home_
 import Pages.Products
+import Pages.Products.Id_
 import Pages.NotFound
 import Request exposing (Request)
 import Shared
@@ -36,6 +38,9 @@ init route =
     
         Route.Products ->
             pages.products.init ()
+    
+        Route.Products__Id_ params ->
+            pages.products__id_.init params
     
         Route.NotFound ->
             pages.notFound.init ()
@@ -63,6 +68,9 @@ view model_ =
         Model.Products params model ->
             pages.products.view params model
     
+        Model.Products__Id_ params ->
+            pages.products__id_.view params ()
+    
         Model.NotFound params ->
             pages.notFound.view params ()
 
@@ -79,6 +87,9 @@ subscriptions model_ =
         Model.Products params model ->
             pages.products.subscriptions params model
     
+        Model.Products__Id_ params ->
+            pages.products__id_.subscriptions params ()
+    
         Model.NotFound params ->
             pages.notFound.subscriptions params ()
 
@@ -90,11 +101,13 @@ subscriptions model_ =
 pages :
     { home_ : Static Gen.Params.Home_.Params
     , products : Bundle Gen.Params.Products.Params Pages.Products.Model Pages.Products.Msg
+    , products__id_ : Static Gen.Params.Products.Id_.Params
     , notFound : Static Gen.Params.NotFound.Params
     }
 pages =
     { home_ = static Pages.Home_.view Model.Home_
     , products = bundle Pages.Products.page Model.Products Msg.Products
+    , products__id_ = static Pages.Products.Id_.view Model.Products__Id_
     , notFound = static Pages.NotFound.view Model.NotFound
     }
 

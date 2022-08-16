@@ -16,11 +16,13 @@
     "dev:elm": "parcel html/index.html",
     "dev:elm-spa": "chokidar elm/ -c \"yarn build:elm-spa\"",
     "review": "elm-review --fix-all",
-    "elm-spa": "elm-spa"
+    "elm-spa": "elm-spa",
+    "format": "elm-format"
   },
   "devDependencies": {
     "@parcel/transformer-elm": "2.6.2",
     "@parcel/transformer-sass": "2.6.2",
+    "@tailwindcss/aspect-ratio": "0.4.0",
     "autoprefixer": "10.3.5",
     "chokidar-cli": "3.0.0",
     "elm-format": "0.8.5",
