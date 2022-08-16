@@ -4,12 +4,14 @@ import Browser.Navigation exposing (Key)
 import Effect exposing (Effect)
 import ElmSpa.Page
 import Gen.Params.Home_
+import Gen.Params.Products
 import Gen.Params.NotFound
 import Gen.Model as Model
 import Gen.Msg as Msg
 import Gen.Route as Route exposing (Route)
 import Page exposing (Page)
 import Pages.Home_
+import Pages.Products
 import Pages.NotFound
 import Request exposing (Request)
 import Shared
@@ -32,6 +34,9 @@ init route =
         Route.Home_ ->
             pages.home_.init ()
     
+        Route.Products ->
+            pages.products.init ()
+    
         Route.NotFound ->
             pages.notFound.init ()
 
@@ -39,7 +44,8 @@ init route =
 update : Msg -> Model -> Shared.Model -> Url -> Key -> ( Model, Effect Msg )
 update msg_ model_ =
     case ( msg_, model_ ) of
-    
+        ( Msg.Products msg, Model.Products params model ) ->
+            pages.products.update params msg model
 
         _ ->
             \_ _ _ -> ( model_, Effect.none )
@@ -54,6 +60,9 @@ view model_ =
         Model.Home_ params ->
             pages.home_.view params ()
     
+        Model.Products params model ->
+            pages.products.view params model
+    
         Model.NotFound params ->
             pages.notFound.view params ()
 
@@ -67,6 +76,9 @@ subscriptions model_ =
         Model.Home_ params ->
             pages.home_.subscriptions params ()
     
+        Model.Products params model ->
+            pages.products.subscriptions params model
+    
         Model.NotFound params ->
             pages.notFound.subscriptions params ()
 
@@ -77,10 +89,12 @@ subscriptions model_ =
 
 pages :
     { home_ : Static Gen.Params.Home_.Params
+    , products : Bundle Gen.Params.Products.Params Pages.Products.Model Pages.Products.Msg
     , notFound : Static Gen.Params.NotFound.Params
     }
 pages =
     { home_ = static Pages.Home_.view Model.Home_
+    , products = bundle Pages.Products.page Model.Products Msg.Products
     , notFound = static Pages.NotFound.view Model.NotFound
     }
 

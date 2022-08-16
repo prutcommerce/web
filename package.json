@@ -15,7 +15,8 @@
     "build:elm-spa": "elm-spa build .",
     "dev:elm": "parcel html/index.html",
     "dev:elm-spa": "chokidar elm/ -c \"yarn build:elm-spa\"",
-    "review": "elm-review --fix-all"
+    "review": "elm-review --fix-all",
+    "elm-spa": "elm-spa"
   },
   "devDependencies": {
     "@parcel/transformer-elm": "2.6.2",
