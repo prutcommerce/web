@@ -1,5 +1,6 @@
 module Pages.Products exposing (Model, Msg, page)
 
+import App.Products.Initial exposing (initial)
 import App.Products.Product exposing (product)
 import App.Products.Type exposing (Product)
 import Gen.Params.Products exposing (Params)
@@ -32,7 +33,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { products = [ { id = "PLMid", name = "PLMname", url = "https://helios-i.mashable.com/imagery/roundups/02WgXOqM1CuP8hpI4P2pqmV/hero-image.fill.size_1200x675.v1646435289.jpg" } ] }, Cmd.none )
+    ( { products = initial }, Cmd.none )
 
 
 
