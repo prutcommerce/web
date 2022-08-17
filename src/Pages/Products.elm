@@ -33,8 +33,14 @@ type alias Response =
     { products : Maybe ProductConnection }
 
 
-type alias Model =
+type alias RemoteResponse =
     RemoteData (Graphql.Http.Error ProductConnection) ProductConnection
+
+
+type alias Model =
+    { queryStatus : RemoteResponse
+    , list : List Product
+    }
 
 
 sendRequest : Cmd Msg
@@ -46,7 +52,7 @@ sendRequest =
 
 init : ( Model, Cmd Msg )
 init =
-    ( RemoteData.Loading, sendRequest )
+    ( { queryStatus = RemoteData.Loading, list = [] }, sendRequest )
 
 
 
@@ -54,18 +60,23 @@ init =
 
 
 type Msg
-    = ReplaceMe
-    | GotProducts Model
+    = GotProducts RemoteResponse
+    | SetProducts (List Product)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ReplaceMe ->
-            ( model, Cmd.none )
+        GotProducts response ->
+            case response of
+                Success products ->
+                    update (SetProducts (products.edges |> mapResults)) { model | queryStatus = response }
 
-        GotProducts products ->
-            ( products, Cmd.none )
+                _ ->
+                    ( { model | queryStatus = response }, Cmd.none )
+
+        SetProducts products ->
+            ( { model | list = products }, Cmd.none )
 
 
 
@@ -79,22 +90,6 @@ subscriptions model =
 
 
 -- VIEW
-
-
-getContent : Model -> List (Html Msg)
-getContent model =
-    case model of
-        NotAsked ->
-            [ text "Not executed" ]
-
-        Loading ->
-            [ text "Loading" ]
-
-        Failure error ->
-            [ text "Error" ]
-
-        Success response ->
-            response.edges |> mapResults |> body |> layout
 
 
 mapResults : List ProductEdge -> List Product
@@ -128,5 +123,5 @@ images =
 view : Model -> View Msg
 view model =
     { title = "Products"
-    , body = getContent model
+    , body = model.list |> body |> layout
     }
