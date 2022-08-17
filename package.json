@@ -17,9 +17,11 @@
     "dev:elm-spa": "chokidar elm/ -c \"yarn build:elm-spa\"",
     "review": "elm-review --fix-all",
     "elm-spa": "elm-spa",
-    "format": "elm-format"
+    "format": "elm-format",
+    "artemis": "elm-graphql http://localhost:5001/graph --base Artemis"
   },
   "devDependencies": {
+    "@dillonkearns/elm-graphql": "4.2.4",
     "@parcel/transformer-elm": "2.6.2",
     "@parcel/transformer-sass": "2.6.2",
     "@tailwindcss/aspect-ratio": "0.4.0",
