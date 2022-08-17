@@ -27,8 +27,9 @@ order products item =
         product =
             getProduct products item
     in
-    div
+    a
         [ Attr.class "flex py-6 px-6 w-5/6 rounded shadow-lg order-container group"
+        , Attr.href (String.concat [ "/orders/", product.id ])
         ]
         [ div
             [ Attr.class "h-80 w-80 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 group-hover:opacity-75"
@@ -47,10 +48,7 @@ order products item =
                     [ Attr.class "flex justify-end text-base font-medium text-gray-900"
                     ]
                     [ h3 []
-                        [ a
-                            [ Attr.href (String.concat [ "/products", product.id ])
-                            ]
-                            [ text product.name ]
+                        [ text product.name
                         ]
                     ]
                 ]

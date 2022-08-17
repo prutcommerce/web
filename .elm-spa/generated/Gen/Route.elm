@@ -8,6 +8,7 @@ import Gen.Params.Home_
 import Gen.Params.Orders
 import Gen.Params.Payments
 import Gen.Params.Products
+import Gen.Params.Orders.Id_
 import Gen.Params.Products.Id_
 import Gen.Params.NotFound
 import Url exposing (Url)
@@ -19,6 +20,7 @@ type Route
     | Orders
     | Payments
     | Products
+    | Orders__Id_ { id : String }
     | Products__Id_ { id : String }
     | NotFound
 
@@ -35,6 +37,7 @@ routes =
     , Parser.map Payments Gen.Params.Payments.parser
     , Parser.map Products Gen.Params.Products.parser
     , Parser.map NotFound Gen.Params.NotFound.parser
+    , Parser.map Orders__Id_ Gen.Params.Orders.Id_.parser
     , Parser.map Products__Id_ Gen.Params.Products.Id_.parser
     ]
 
@@ -58,6 +61,9 @@ toHref route =
     
         Products ->
             joinAsHref [ "products" ]
+    
+        Orders__Id_ params ->
+            joinAsHref [ "orders", params.id ]
     
         Products__Id_ params ->
             joinAsHref [ "products", params.id ]

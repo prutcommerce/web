@@ -7,6 +7,7 @@ import Gen.Params.Home_
 import Gen.Params.Orders
 import Gen.Params.Payments
 import Gen.Params.Products
+import Gen.Params.Orders.Id_
 import Gen.Params.Products.Id_
 import Gen.Params.NotFound
 import Gen.Model as Model
@@ -17,6 +18,7 @@ import Pages.Home_
 import Pages.Orders
 import Pages.Payments
 import Pages.Products
+import Pages.Orders.Id_
 import Pages.Products.Id_
 import Pages.NotFound
 import Request exposing (Request)
@@ -49,6 +51,9 @@ init route =
         Route.Products ->
             pages.products.init ()
     
+        Route.Orders__Id_ params ->
+            pages.orders__id_.init params
+    
         Route.Products__Id_ params ->
             pages.products__id_.init params
     
@@ -67,6 +72,9 @@ update msg_ model_ =
     
         ( Msg.Products msg, Model.Products params model ) ->
             pages.products.update params msg model
+    
+        ( Msg.Orders__Id_ msg, Model.Orders__Id_ params model ) ->
+            pages.orders__id_.update params msg model
     
         ( Msg.Products__Id_ msg, Model.Products__Id_ params model ) ->
             pages.products__id_.update params msg model
@@ -93,6 +101,9 @@ view model_ =
         Model.Products params model ->
             pages.products.view params model
     
+        Model.Orders__Id_ params model ->
+            pages.orders__id_.view params model
+    
         Model.Products__Id_ params model ->
             pages.products__id_.view params model
     
@@ -118,6 +129,9 @@ subscriptions model_ =
         Model.Products params model ->
             pages.products.subscriptions params model
     
+        Model.Orders__Id_ params model ->
+            pages.orders__id_.subscriptions params model
+    
         Model.Products__Id_ params model ->
             pages.products__id_.subscriptions params model
     
@@ -134,6 +148,7 @@ pages :
     , orders : Bundle Gen.Params.Orders.Params Pages.Orders.Model Pages.Orders.Msg
     , payments : Bundle Gen.Params.Payments.Params Pages.Payments.Model Pages.Payments.Msg
     , products : Bundle Gen.Params.Products.Params Pages.Products.Model Pages.Products.Msg
+    , orders__id_ : Bundle Gen.Params.Orders.Id_.Params Pages.Orders.Id_.Model Pages.Orders.Id_.Msg
     , products__id_ : Bundle Gen.Params.Products.Id_.Params Pages.Products.Id_.Model Pages.Products.Id_.Msg
     , notFound : Static Gen.Params.NotFound.Params
     }
@@ -142,6 +157,7 @@ pages =
     , orders = bundle Pages.Orders.page Model.Orders Msg.Orders
     , payments = bundle Pages.Payments.page Model.Payments Msg.Payments
     , products = bundle Pages.Products.page Model.Products Msg.Products
+    , orders__id_ = bundle Pages.Orders.Id_.page Model.Orders__Id_ Msg.Orders__Id_
     , products__id_ = bundle Pages.Products.Id_.page Model.Products__Id_ Msg.Products__Id_
     , notFound = static Pages.NotFound.view Model.NotFound
     }
