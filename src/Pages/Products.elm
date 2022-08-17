@@ -46,7 +46,7 @@ type alias Model =
 sendRequest : Cmd Msg
 sendRequest =
     query
-        |> Graphql.Http.queryRequest "http://173.249.46.33:5000/graph"
+        |> Graphql.Http.queryRequest "http://84.232.145.86:5000/graph"
         |> Graphql.Http.send (RemoteData.fromResult >> GotProducts)
 
 
