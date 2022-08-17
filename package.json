@@ -18,7 +18,8 @@
     "review": "elm-review --fix-all",
     "elm-spa": "elm-spa",
     "format": "elm-format",
-    "artemis": "elm-graphql http://84.232.145.86:5000/graph --base Artemis"
+    "artemis": "elm-graphql http://84.232.145.86:5000/graph --base Artemis",
+    "melissa": "elm-graphql http://84.232.145.86:5050/graph --base Melissa"
   },
   "devDependencies": {
     "@dillonkearns/elm-graphql": "4.2.4",
