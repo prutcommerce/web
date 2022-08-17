@@ -1,13 +1,76 @@
-module Pages.Products.Id_ exposing (view)
+module Pages.Products.Id_ exposing (Model, Msg(..), page)
 
 import App.Layout exposing (layout)
+import App.Products.Type exposing (Product)
+import Gen.Params.Products.Id_ exposing (Params)
 import Html exposing (..)
 import Html.Attributes as Attr
+import Page
+import Request
+import Shared
 import View exposing (View)
 
 
-body : Html msg
-body =
+type alias Model =
+    { id : String }
+
+
+type Msg
+    = NoOp
+
+
+init : Request.With Params -> ( Model, Cmd Msg )
+init request =
+    ( { id = request.params.id }, Cmd.none )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+
+page : Shared.Model -> Request.With Params -> Page.With Model Msg
+page shared req =
+    Page.element
+        { init = init req
+        , update = update
+        , view = view shared
+        , subscriptions = subscriptions
+        }
+
+
+getCurrent : Shared.Model -> Model -> Product
+getCurrent shared model =
+    let
+        query =
+            List.filter (\element -> element.id == model.id) shared.list
+                |> List.head
+    in
+    case query of
+        Just product ->
+            product
+
+        Nothing ->
+            { id = "", name = "", url = "" }
+
+
+body : Shared.Model -> Model -> Html msg
+body shared model =
+    let
+        current =
+            getCurrent shared model
+    in
     div
         [ Attr.class "bg-white"
         ]
@@ -21,7 +84,7 @@ body =
                     [ Attr.class "hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block"
                     ]
                     [ img
-                        [ Attr.src "https://helios-i.mashable.com/imagery/roundups/02WgXOqM1CuP8hpI4P2pqmV/hero-image.fill.size_1200x675.v1646435289.jpg"
+                        [ Attr.src current.url
                         , Attr.class "w-full h-full object-center object-cover"
                         ]
                         []
@@ -33,8 +96,7 @@ body =
                         [ Attr.class "aspect-w-3 aspect-h-2 rounded-lg overflow-hidden"
                         ]
                         [ img
-                            [ Attr.src "https://cdn.britannica.com/65/132165-050-EF2D11F2/roller-skater.jpg"
-                            , Attr.alt "Model wearing plain black basic tee."
+                            [ Attr.src current.url
                             , Attr.class "w-full h-full object-center object-cover"
                             ]
                             []
@@ -43,8 +105,7 @@ body =
                         [ Attr.class "aspect-w-3 aspect-h-2 rounded-lg overflow-hidden"
                         ]
                         [ img
-                            [ Attr.src "https://pyxis.nymag.com/v1/imgs/a2e/fbe/d0b26f8723437d87059c91f1fd965b5a32-bic-roller-skates-final.2x.rsocial.w600.jpg"
-                            , Attr.alt "Model wearing plain gray basic tee."
+                            [ Attr.src current.url
                             , Attr.class "w-full h-full object-center object-cover"
                             ]
                             []
@@ -54,8 +115,7 @@ body =
                     [ Attr.class "aspect-w-4 aspect-h-5 sm:rounded-lg sm:overflow-hidden lg:aspect-w-3 lg:aspect-h-4"
                     ]
                     [ img
-                        [ Attr.src "https://cdn.webshopapp.com/shops/294109/files/319381193/image.jpg"
-                        , Attr.alt "Model wearing plain white basic tee."
+                        [ Attr.src current.url
                         , Attr.class "w-full h-full object-center object-cover"
                         ]
                         []
@@ -70,7 +130,7 @@ body =
                     [ h1
                         [ Attr.class "text-2xl font-bold tracking-tight text-gray-900 sm:tracking-tight sm:text-3xl"
                         ]
-                        [ text "Cool skates" ]
+                        [ text current.name ]
                     ]
                 , div
                     []
@@ -88,11 +148,11 @@ body =
         ]
 
 
-view : View msg
-view =
+view : Shared.Model -> Model -> View msg
+view shared model =
     { title = "Product"
     , body =
-        [ body
+        [ body shared model
         ]
             |> layout
     }

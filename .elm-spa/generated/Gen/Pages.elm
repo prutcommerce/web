@@ -51,6 +51,9 @@ update msg_ model_ =
     case ( msg_, model_ ) of
         ( Msg.Products msg, Model.Products params model ) ->
             pages.products.update params msg model
+    
+        ( Msg.Products__Id_ msg, Model.Products__Id_ params model ) ->
+            pages.products__id_.update params msg model
 
         _ ->
             \_ _ _ -> ( model_, Effect.none )
@@ -68,8 +71,8 @@ view model_ =
         Model.Products params model ->
             pages.products.view params model
     
-        Model.Products__Id_ params ->
-            pages.products__id_.view params ()
+        Model.Products__Id_ params model ->
+            pages.products__id_.view params model
     
         Model.NotFound params ->
             pages.notFound.view params ()
@@ -87,8 +90,8 @@ subscriptions model_ =
         Model.Products params model ->
             pages.products.subscriptions params model
     
-        Model.Products__Id_ params ->
-            pages.products__id_.subscriptions params ()
+        Model.Products__Id_ params model ->
+            pages.products__id_.subscriptions params model
     
         Model.NotFound params ->
             pages.notFound.subscriptions params ()
@@ -101,13 +104,13 @@ subscriptions model_ =
 pages :
     { home_ : Static Gen.Params.Home_.Params
     , products : Bundle Gen.Params.Products.Params Pages.Products.Model Pages.Products.Msg
-    , products__id_ : Static Gen.Params.Products.Id_.Params
+    , products__id_ : Bundle Gen.Params.Products.Id_.Params Pages.Products.Id_.Model Pages.Products.Id_.Msg
     , notFound : Static Gen.Params.NotFound.Params
     }
 pages =
     { home_ = static Pages.Home_.view Model.Home_
     , products = bundle Pages.Products.page Model.Products Msg.Products
-    , products__id_ = static Pages.Products.Id_.view Model.Products__Id_
+    , products__id_ = bundle Pages.Products.Id_.page Model.Products__Id_ Msg.Products__Id_
     , notFound = static Pages.NotFound.view Model.NotFound
     }
 

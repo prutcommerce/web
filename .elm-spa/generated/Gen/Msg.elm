@@ -12,4 +12,5 @@ import Pages.NotFound
 
 type Msg
     = Products Pages.Products.Msg
+    | Products__Id_ Pages.Products.Id_.Msg
 

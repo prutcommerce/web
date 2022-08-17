@@ -14,6 +14,6 @@ type Model
     = Redirecting_
     | Home_ Gen.Params.Home_.Params
     | Products Gen.Params.Products.Params Pages.Products.Model
-    | Products__Id_ Gen.Params.Products.Id_.Params
+    | Products__Id_ Gen.Params.Products.Id_.Params Pages.Products.Id_.Model
     | NotFound Gen.Params.NotFound.Params
 
