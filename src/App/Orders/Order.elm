@@ -29,7 +29,7 @@ order products item =
     in
     a
         [ Attr.class "flex py-6 px-6 w-5/6 rounded shadow-lg order-container group"
-        , Attr.href (String.concat [ "/orders/", product.id ])
+        , Attr.href (String.concat [ "/orders/", item.id ])
         ]
         [ div
             [ Attr.class "h-80 w-80 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 group-hover:opacity-75"
