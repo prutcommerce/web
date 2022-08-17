@@ -183,5 +183,8 @@ images =
     [ "https://cdn.britannica.com/65/132165-050-EF2D11F2/roller-skater.jpg"
     , "https://global-uploads.webflow.com/5ca5fe687e34be0992df1fbe/62841e551612bd1a927b44f3_boy-on-roller-skating-class-2021-08-26-16-53-45-utc-min.jpg"
     , "https://pyxis.nymag.com/v1/imgs/a2e/fbe/d0b26f8723437d87059c91f1fd965b5a32-bic-roller-skates-final.2x.rsocial.w600.jpg"
+    , "https://cyclingtips.com/wp-content/uploads/2022/04/Best-bike-for-Paris-Roubaix-with-suspension-forks-22.jpg"
+    , "https://upload.wikimedia.org/wikipedia/commons/d/d6/Skateboarder_in_the_air.jpg"
+    , "https://i0.wp.com/youthcare.org/wp-content/uploads/2021/01/pexels-allan-mas-5370615-scaled.jpg?fit=1834%2C2560&ssl=1"
     ]
         |> Array.fromList
