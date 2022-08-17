@@ -1,8 +1,9 @@
 module App.Shared.OrderGraphQL exposing (..)
 
-import Graphql.Operation exposing (RootQuery)
+import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
+import Melissa.Mutation as Mutation exposing (CreateOrderRequiredArguments)
 import Melissa.Object
 import Melissa.Object.Order as Order
 import Melissa.Object.OrderConnection as Connection
@@ -56,11 +57,21 @@ connectionSelection =
         |> with (Connection.edges edgeSelection)
 
 
-arguments : OrdersOptionalArguments -> OrdersOptionalArguments
-arguments _ =
-    { first = Present 10, after = Absent }
+queryArguments : OrdersOptionalArguments -> OrdersOptionalArguments
+queryArguments _ =
+    { first = Present 100, after = Absent }
 
 
 query : SelectionSet OrderConnection RootQuery
 query =
-    Query.orders arguments connectionSelection
+    Query.orders queryArguments connectionSelection
+
+
+mutationArguments : String -> CreateOrderRequiredArguments
+mutationArguments productId =
+    { order = { productId = Id productId, quantity = 1 } }
+
+
+mutation : String -> SelectionSet OrderNode RootMutation
+mutation productId =
+    Mutation.createOrder (mutationArguments productId) nodeSelection

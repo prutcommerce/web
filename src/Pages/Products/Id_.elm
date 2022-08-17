@@ -1,34 +1,89 @@
 module Pages.Products.Id_ exposing (Model, Msg(..), page)
 
 import App.Layout exposing (layout)
+import App.Notifications exposing (displayNotification)
 import App.Products.Type exposing (Product)
+import App.Shared.OrderGraphQL exposing (OrderNode, mutation)
 import Gen.Params.Products.Id_ exposing (Params)
+import Graphql.Http
 import Html exposing (..)
 import Html.Attributes as Attr
+import Html.Events exposing (onClick)
 import Page
+import RemoteData exposing (RemoteData(..))
 import Request
 import Shared
 import View exposing (View)
 
 
 type alias Model =
-    { id : String }
+    { id : String
+    , status : Response
+    }
+
+
+type alias Response =
+    RemoteData (Graphql.Http.Error OrderNode) OrderNode
 
 
 type Msg
-    = NoOp
+    = OrderCreated Response
+    | CreateOrder
+
+
+sendRequest : Model -> Cmd Msg
+sendRequest model =
+    mutation model.id
+        |> Graphql.Http.mutationRequest "http://84.232.145.86:5050/graph"
+        |> Graphql.Http.send (RemoteData.fromResult >> OrderCreated)
 
 
 init : Request.With Params -> ( Model, Cmd Msg )
 init request =
-    ( { id = request.params.id }, Cmd.none )
+    ( { id = request.params.id, status = RemoteData.NotAsked }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
+        OrderCreated response ->
+            case response of
+                Failure error ->
+                    case error of
+                        Graphql.Http.GraphqlError _ graphqlErrors ->
+                            let
+                                errorString =
+                                    graphqlErrors
+                                        |> List.map (\graphError -> graphError.message)
+                                        |> String.join "\n"
+                            in
+                            ( { model | status = response }, displayNotification errorString )
+
+                        Graphql.Http.HttpError httpError ->
+                            case httpError of
+                                Graphql.Http.BadUrl string ->
+                                    ( { model | status = response }, displayNotification ("Bad url: " ++ string) )
+
+                                Graphql.Http.Timeout ->
+                                    ( { model | status = response }, displayNotification "Server timeout" )
+
+                                Graphql.Http.NetworkError ->
+                                    ( { model | status = response }, displayNotification "Network error" )
+
+                                Graphql.Http.BadStatus metadata string ->
+                                    ( { model | status = response }, displayNotification ("Bad status: " ++ metadata.statusText) )
+
+                                Graphql.Http.BadPayload _ ->
+                                    ( { model | status = response }, displayNotification "Bad payload" )
+
+                Success a ->
+                    ( { model | status = response }, displayNotification "Order created!" )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        CreateOrder ->
+            ( model, sendRequest model )
 
 
 
@@ -65,7 +120,7 @@ getCurrent shared model =
             { id = "", name = "", url = "" }
 
 
-body : Shared.Model -> Model -> Html msg
+body : Shared.Model -> Model -> Html Msg
 body shared model =
     let
         current =
@@ -136,9 +191,10 @@ body shared model =
                     []
                     [ form
                         []
-                        [ button
-                            [ Attr.type_ "submit"
-                            , Attr.class "w-full bg-indigo-600 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        [ a
+                            [ Attr.class "w-full bg-indigo-600 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            , onClick CreateOrder
+                            , Attr.href "#"
                             ]
                             [ text "Add to bag" ]
                         ]
@@ -148,7 +204,7 @@ body shared model =
         ]
 
 
-view : Shared.Model -> Model -> View msg
+view : Shared.Model -> Model -> View Msg
 view shared model =
     { title = "Product"
     , body =

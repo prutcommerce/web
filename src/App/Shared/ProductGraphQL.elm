@@ -55,7 +55,7 @@ connectionSelection =
 
 arguments : ProductsOptionalArguments -> ProductsOptionalArguments
 arguments _ =
-    { first = Present 10, after = Absent }
+    { first = Present 100, after = Absent }
 
 
 query : SelectionSet ProductConnection RootQuery

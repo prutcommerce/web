@@ -57,7 +57,7 @@ connectionSelection =
 
 arguments : PaymentsOptionalArguments -> PaymentsOptionalArguments
 arguments _ =
-    { first = Present 10, after = Absent }
+    { first = Present 100, after = Absent }
 
 
 query : SelectionSet PaymentConnection RootQuery
