@@ -1,4 +1,4 @@
-module App.Shared.Query exposing (..)
+module App.Shared.ProductGraphQl exposing (..)
 
 import Artemis.Object
 import Artemis.Object.Product as Product
