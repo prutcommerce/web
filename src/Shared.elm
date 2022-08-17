@@ -9,7 +9,7 @@ module Shared exposing
     )
 
 import App.Products.Type exposing (Product)
-import App.Shared.ProductGraphQl exposing (ProductConnection, ProductEdge, query)
+import App.Shared.ProductGraphQL exposing (ProductConnection, ProductEdge, query)
 import Array exposing (Array)
 import Graphql.Http
 import Json.Decode as Json
