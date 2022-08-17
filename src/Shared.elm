@@ -1,5 +1,6 @@
 module Shared exposing
-    ( Flags
+    ( Feature
+    , Flags
     , Model
     , Msg
     , getProducts
@@ -37,16 +38,16 @@ type alias PaymentResponse =
     RemoteData (Graphql.Http.Error PaymentConnection) PaymentConnection
 
 
-type alias Feature entity response =
-    { status : response
+type alias Feature entity connection =
+    { status : RemoteData (Graphql.Http.Error connection) connection
     , list : List entity
     }
 
 
 type alias Model =
-    { products : Feature Product ProductResponse
-    , orders : Feature Order OrderResponse
-    , payments : Feature Payment PaymentResponse
+    { products : Feature Product ProductConnection
+    , orders : Feature Order OrderConnection
+    , payments : Feature Payment PaymentConnection
     }
 
 

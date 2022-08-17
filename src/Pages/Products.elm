@@ -3,13 +3,12 @@ module Pages.Products exposing (Model, Msg(..), page)
 import App.Common.ContentPicker exposing (contentPicker)
 import App.Layout exposing (layout)
 import App.Products exposing (body)
+import App.Products.Type exposing (Product)
 import App.Shared.ProductGraphQL exposing (ProductConnection)
 import Gen.Params.Products exposing (Params)
-import Graphql.Http
 import Page
-import RemoteData exposing (RemoteData)
 import Request
-import Shared
+import Shared exposing (Feature)
 import View exposing (View)
 
 
@@ -64,13 +63,13 @@ subscriptions model =
 -- VIEW
 
 
-productsResponse : Shared.Model -> RemoteData (Graphql.Http.Error ProductConnection) ProductConnection
-productsResponse model =
-    model.products.status
+products : Shared.Model -> Feature Product ProductConnection
+products model =
+    model.products
 
 
 view : Shared.Model -> Model -> View Msg
 view shared model =
     { title = "Products"
-    , body = contentPicker productsResponse shared (shared.products.list |> body) |> layout
+    , body = contentPicker products shared (shared.products.list |> body) |> layout
     }

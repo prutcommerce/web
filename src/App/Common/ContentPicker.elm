@@ -1,16 +1,20 @@
 module App.Common.ContentPicker exposing (contentPicker)
 
+import App.Common.Empty exposing (empty)
 import App.Common.Error exposing (error)
 import App.Common.Loading exposing (loading)
-import Graphql.Http
 import Html exposing (Html)
 import RemoteData exposing (RemoteData(..))
-import Shared exposing (Model)
+import Shared exposing (Feature, Model)
 
 
-contentPicker : (Model -> RemoteData (Graphql.Http.Error a) a) -> Model -> List (Html msg) -> List (Html msg)
+contentPicker : (Model -> Feature a b) -> Model -> List (Html msg) -> List (Html msg)
 contentPicker fieldPicker model children =
-    case fieldPicker model of
+    let
+        feature =
+            fieldPicker model
+    in
+    case feature.status of
         NotAsked ->
             [ loading ]
 
@@ -21,4 +25,8 @@ contentPicker fieldPicker model children =
             [ error ]
 
         Success a ->
-            children
+            if List.isEmpty feature.list then
+                [ empty ]
+
+            else
+                children

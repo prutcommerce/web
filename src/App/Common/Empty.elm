@@ -1,19 +1,21 @@
-module App.Common.Loading exposing (loading)
+module App.Common.Empty exposing (empty)
 
+import Color
 import Html exposing (..)
 import Html.Attributes as Attr
+import Material.Icons as Filled
+import Material.Icons.Types exposing (Coloring(..))
 
 
-loading : Html msg
-loading =
+empty : Html msg
+empty =
     div
         [ Attr.class "flex items-center justify-center flex-col h-full"
         ]
         [ div
-            [ Attr.class "w-40 h-40 border-t-4 border-b-4 border-gray-400 rounded-full animate-spin"
-            ]
             []
+            [ Filled.inventory 100 (Color <| Color.rgb255 156 163 175) ]
         , div
             [ Attr.class "mt-3 text-3xl font-bold tracking-tight text-gray-400 sm:text-4xl" ]
-            [ h3 [] [ text "Loading..." ] ]
+            [ h3 [] [ text "Oops, something went wrong" ] ]
         ]
