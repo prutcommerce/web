@@ -66,11 +66,11 @@ subscriptions model =
 
 productsResponse : Shared.Model -> RemoteData (Graphql.Http.Error ProductConnection) ProductConnection
 productsResponse model =
-    model.queryStatus
+    model.products.status
 
 
 view : Shared.Model -> Model -> View Msg
 view shared model =
     { title = "Products"
-    , body = contentPicker productsResponse shared (shared.list |> body) |> layout
+    , body = contentPicker productsResponse shared (shared.products.list |> body) |> layout
     }

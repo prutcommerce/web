@@ -2,13 +2,15 @@ module Shared exposing
     ( Flags
     , Model
     , Msg
+    , getProducts
     , init
-    , sendRequest
     , subscriptions
     , update
     )
 
+import App.Orders.Type exposing (Order)
 import App.Products.Type exposing (Product)
+import App.Shared.OrderGraphQL as OrderGraphQL exposing (OrderConnection, OrderEdge)
 import App.Shared.ProductGraphQL exposing (ProductConnection, ProductEdge, query)
 import Array exposing (Array)
 import Graphql.Http
@@ -21,50 +23,87 @@ type alias Flags =
     Json.Value
 
 
-type alias Response =
-    { products : Maybe ProductConnection }
-
-
-type alias RemoteResponse =
+type alias ProductResponse =
     RemoteData (Graphql.Http.Error ProductConnection) ProductConnection
 
 
-type alias Model =
-    { queryStatus : RemoteResponse
-    , list : List Product
+type alias OrderResponse =
+    RemoteData (Graphql.Http.Error OrderConnection) OrderConnection
+
+
+type alias Feature entity response =
+    { status : response
+    , list : List entity
     }
 
 
-sendRequest : Cmd Msg
-sendRequest =
+type alias Model =
+    { products : Feature Product ProductResponse
+    , orders : Feature Order OrderResponse
+    }
+
+
+getProducts : Cmd Msg
+getProducts =
     query
         |> Graphql.Http.queryRequest "http://84.232.145.86:5000/graph"
         |> Graphql.Http.send (RemoteData.fromResult >> GotProducts)
 
 
+getOrders : Cmd Msg
+getOrders =
+    OrderGraphQL.query
+        |> Graphql.Http.queryRequest "http://84.232.145.86:5050/graph"
+        |> Graphql.Http.send (RemoteData.fromResult >> GotOrders)
+
+
 type Msg
-    = GotProducts RemoteResponse
-    | SetProducts (List Product)
+    = GotProducts ProductResponse
+    | GotOrders OrderResponse
 
 
 init : Request -> Flags -> ( Model, Cmd Msg )
 init _ _ =
-    ( { queryStatus = RemoteData.Loading, list = [] }, sendRequest )
+    let
+        initialProducts =
+            { status = RemoteData.Loading, list = [] }
+
+        initialOrders =
+            { status = RemoteData.Loading, list = [] }
+    in
+    ( { products = initialProducts, orders = initialOrders }, Cmd.batch [ getProducts, getOrders ] )
+
+
+changeProducts : Model -> ProductResponse -> List ProductEdge -> Model
+changeProducts model response products =
+    { status = response, list = mapProducts products }
+        |> (\newProducts -> { model | products = newProducts })
+
+
+changeOrders : Model -> OrderResponse -> List OrderEdge -> Model
+changeOrders model response orders =
+    { status = response, list = mapOrders orders }
+        |> (\newOrders -> { model | orders = newOrders })
 
 
 update : Request -> Msg -> Model -> ( Model, Cmd Msg )
-update request msg model =
+update _ msg model =
     case msg of
         GotProducts response ->
             case response of
                 Success products ->
-                    update request (SetProducts (products.edges |> mapResults)) { model | queryStatus = response }
+                    ( changeProducts model response products.edges, Cmd.none )
 
                 _ ->
-                    ( { model | queryStatus = response }, Cmd.none )
+                    ( { model | products = { list = model.products.list, status = response } }, Cmd.none )
 
-        SetProducts products ->
-            ( { model | list = products }, Cmd.none )
+        GotOrders response ->
+            case response of
+                Success orders ->
+                    ( changeOrders model response orders.edges, Cmd.none )
+
+                _ ->
+                    ( { model | orders = { list = model.orders.list, status = response } }, Cmd.none )
 
 
 subscriptions : Request -> Model -> Sub Msg
@@ -72,10 +111,16 @@ subscriptions _ _ =
     Sub.none
 
 
-mapResults : List ProductEdge -> List Product
-mapResults edges =
+mapProducts : List ProductEdge -> List Product
+mapProducts edges =
     edges
         |> List.map (\edge -> { id = edge.node.id, name = edge.node.name, url = getPseudoRandomImageUrl edge })
+
+
+mapOrders : List OrderEdge -> List Order
+mapOrders edges =
+    edges
+        |> List.map (\edge -> { id = edge.node.id, quantity = edge.node.quantity, status = edge.node.status, productId = edge.node.productId })
 
 
 getPseudoRandomImageUrl : ProductEdge -> String

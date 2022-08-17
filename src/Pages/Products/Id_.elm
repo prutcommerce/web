@@ -54,7 +54,7 @@ getCurrent : Shared.Model -> Model -> Product
 getCurrent shared model =
     let
         query =
-            List.filter (\element -> element.id == model.id) shared.list
+            List.filter (\element -> element.id == model.id) shared.products.list
                 |> List.head
     in
     case query of
