@@ -2,11 +2,10 @@ module Pages.Orders exposing (Model, Msg, page)
 
 import App.Common.ContentPicker exposing (contentPicker)
 import App.Layout exposing (layout)
+import App.Orders exposing (body)
 import App.Orders.Type exposing (Order)
 import App.Shared.OrderGraphQL exposing (OrderConnection)
-import Debug exposing (toString)
 import Gen.Params.Orders exposing (Params)
-import Html exposing (div, text)
 import Page
 import Request
 import Shared exposing (Feature)
@@ -72,5 +71,5 @@ orders model =
 view : Shared.Model -> Model -> View Msg
 view shared model =
     { title = "Orders"
-    , body = contentPicker orders shared [ div [] [ text (shared.orders.list |> toString) ] ] |> layout
+    , body = contentPicker orders shared (body shared) |> layout
     }
