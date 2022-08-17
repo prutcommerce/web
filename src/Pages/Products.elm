@@ -81,8 +81,8 @@ subscriptions model =
 -- VIEW
 
 
-someShit : Model -> List (Html Msg)
-someShit model =
+getContent : Model -> List (Html Msg)
+getContent model =
     case model of
         NotAsked ->
             [ text "Not executed" ]
@@ -128,5 +128,5 @@ images =
 view : Model -> View Msg
 view model =
     { title = "Products"
-    , body = someShit model
+    , body = getContent model
     }
