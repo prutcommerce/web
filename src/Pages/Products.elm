@@ -3,7 +3,7 @@ module Pages.Products exposing (Model, Msg(..), page)
 import App.Common.ContentPicker exposing (contentPicker)
 import App.Layout exposing (layout)
 import App.Products exposing (body)
-import App.Products.Initial exposing (ProductConnection)
+import App.Shared.Query exposing (ProductConnection)
 import Gen.Params.Products exposing (Params)
 import Graphql.Http
 import Page
