@@ -4,6 +4,7 @@ import Browser.Navigation exposing (Key)
 import Effect exposing (Effect)
 import ElmSpa.Page
 import Gen.Params.Home_
+import Gen.Params.Orders
 import Gen.Params.Payments
 import Gen.Params.Products
 import Gen.Params.Products.Id_
@@ -13,6 +14,7 @@ import Gen.Msg as Msg
 import Gen.Route as Route exposing (Route)
 import Page exposing (Page)
 import Pages.Home_
+import Pages.Orders
 import Pages.Payments
 import Pages.Products
 import Pages.Products.Id_
@@ -38,6 +40,9 @@ init route =
         Route.Home_ ->
             pages.home_.init ()
     
+        Route.Orders ->
+            pages.orders.init ()
+    
         Route.Payments ->
             pages.payments.init ()
     
@@ -54,6 +59,9 @@ init route =
 update : Msg -> Model -> Shared.Model -> Url -> Key -> ( Model, Effect Msg )
 update msg_ model_ =
     case ( msg_, model_ ) of
+        ( Msg.Orders msg, Model.Orders params model ) ->
+            pages.orders.update params msg model
+    
         ( Msg.Payments msg, Model.Payments params model ) ->
             pages.payments.update params msg model
     
@@ -75,6 +83,9 @@ view model_ =
     
         Model.Home_ params ->
             pages.home_.view params ()
+    
+        Model.Orders params model ->
+            pages.orders.view params model
     
         Model.Payments params model ->
             pages.payments.view params model
@@ -98,6 +109,9 @@ subscriptions model_ =
         Model.Home_ params ->
             pages.home_.subscriptions params ()
     
+        Model.Orders params model ->
+            pages.orders.subscriptions params model
+    
         Model.Payments params model ->
             pages.payments.subscriptions params model
     
@@ -117,6 +131,7 @@ subscriptions model_ =
 
 pages :
     { home_ : Static Gen.Params.Home_.Params
+    , orders : Bundle Gen.Params.Orders.Params Pages.Orders.Model Pages.Orders.Msg
     , payments : Bundle Gen.Params.Payments.Params Pages.Payments.Model Pages.Payments.Msg
     , products : Bundle Gen.Params.Products.Params Pages.Products.Model Pages.Products.Msg
     , products__id_ : Bundle Gen.Params.Products.Id_.Params Pages.Products.Id_.Model Pages.Products.Id_.Msg
@@ -124,6 +139,7 @@ pages :
     }
 pages =
     { home_ = static Pages.Home_.view Model.Home_
+    , orders = bundle Pages.Orders.page Model.Orders Msg.Orders
     , payments = bundle Pages.Payments.page Model.Payments Msg.Payments
     , products = bundle Pages.Products.page Model.Products Msg.Products
     , products__id_ = bundle Pages.Products.Id_.page Model.Products__Id_ Msg.Products__Id_

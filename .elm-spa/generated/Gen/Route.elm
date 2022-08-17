@@ -5,6 +5,7 @@ module Gen.Route exposing
     )
 
 import Gen.Params.Home_
+import Gen.Params.Orders
 import Gen.Params.Payments
 import Gen.Params.Products
 import Gen.Params.Products.Id_
@@ -15,6 +16,7 @@ import Url.Parser as Parser exposing ((</>), Parser)
 
 type Route
     = Home_
+    | Orders
     | Payments
     | Products
     | Products__Id_ { id : String }
@@ -29,6 +31,7 @@ fromUrl =
 routes : List (Parser (Route -> a) a)
 routes =
     [ Parser.map Home_ Gen.Params.Home_.parser
+    , Parser.map Orders Gen.Params.Orders.parser
     , Parser.map Payments Gen.Params.Payments.parser
     , Parser.map Products Gen.Params.Products.parser
     , Parser.map NotFound Gen.Params.NotFound.parser
@@ -46,6 +49,9 @@ toHref route =
     case route of
         Home_ ->
             joinAsHref []
+    
+        Orders ->
+            joinAsHref [ "orders" ]
     
         Payments ->
             joinAsHref [ "payments" ]

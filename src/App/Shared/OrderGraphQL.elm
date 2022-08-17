@@ -39,9 +39,9 @@ nodeSelection : SelectionSet OrderNode Melissa.Object.Order
 nodeSelection =
     SelectionSet.succeed OrderNode
         |> with (Order.id |> SelectionSet.map fromId)
+        |> with (Order.productId |> SelectionSet.map fromId)
         |> with Order.quantity
         |> with Order.status
-        |> with (Order.productId |> SelectionSet.map fromId)
 
 
 edgeSelection : SelectionSet OrderEdge Melissa.Object.OrderEdge
