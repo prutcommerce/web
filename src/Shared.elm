@@ -10,9 +10,9 @@ module Shared exposing
 
 import App.Products.Type exposing (Product)
 import App.Shared.Query exposing (ProductConnection, ProductEdge, query)
+import Array exposing (Array)
 import Graphql.Http
 import Json.Decode as Json
-import List.Extra exposing (getAt)
 import RemoteData exposing (RemoteData(..))
 import Request exposing (Request)
 
@@ -75,26 +75,35 @@ subscriptions _ _ =
 mapResults : List ProductEdge -> List Product
 mapResults edges =
     edges
-        |> List.map (\edge -> { id = edge.node.id, name = edge.node.name, url = getRandomImageUrl edge })
+        |> List.map (\edge -> { id = edge.node.id, name = edge.node.name, url = getPseudoRandomImageUrl edge })
 
 
-getRandomImageUrl : ProductEdge -> String
-getRandomImageUrl _ =
-    let
-        index =
-            1
-    in
-    case getAt index images of
-        Just url ->
-            url
+getPseudoRandomImageUrl : ProductEdge -> String
+getPseudoRandomImageUrl product =
+    String.toList product.node.id
+        |> List.map Char.toCode
+        |> List.sum
+        |> modBy (Array.length images)
+        |> (\index ->
+                Array.get index images
+                    |> coalesceMaybeString
+           )
+
+
+coalesceMaybeString : Maybe String -> String
+coalesceMaybeString maybe =
+    case maybe of
+        Just string ->
+            string
 
         Nothing ->
-            ""
+            "https://cdn.britannica.com/65/132165-050-EF2D11F2/roller-skater.jpg"
 
 
-images : List String
+images : Array String
 images =
     [ "https://cdn.britannica.com/65/132165-050-EF2D11F2/roller-skater.jpg"
     , "https://global-uploads.webflow.com/5ca5fe687e34be0992df1fbe/62841e551612bd1a927b44f3_boy-on-roller-skating-class-2021-08-26-16-53-45-utc-min.jpg"
     , "https://pyxis.nymag.com/v1/imgs/a2e/fbe/d0b26f8723437d87059c91f1fd965b5a32-bic-roller-skates-final.2x.rsocial.w600.jpg"
     ]
+        |> Array.fromList
