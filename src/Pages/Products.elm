@@ -100,7 +100,7 @@ someShit model =
 mapResults : List ProductEdge -> List Product
 mapResults edges =
     edges
-        |> List.map (\edge -> { id = "", name = edge.node.name, url = getRandomImageUrl edge })
+        |> List.map (\edge -> { id = edge.node.id, name = edge.node.name, url = getRandomImageUrl edge })
 
 
 getRandomImageUrl : ProductEdge -> String
