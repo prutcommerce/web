@@ -17,9 +17,10 @@
     "dev:elm-spa": "chokidar elm/ -c \"yarn build:elm-spa\"",
     "review": "elm-review --fix-all",
     "elm-spa": "elm-spa",
-    "format": "elm-format",
+    "format": "elm-format ./src --yes",
     "artemis": "elm-graphql http://84.232.145.86:5000/graph --base Artemis",
-    "melissa": "elm-graphql http://84.232.145.86:5050/graph --base Melissa"
+    "melissa": "elm-graphql http://84.232.145.86:5050/graph --base Melissa",
+    "evander": "elm-graphql http://84.232.145.86:5100/graph --base Evander"
   },
   "devDependencies": {
     "@dillonkearns/elm-graphql": "4.2.4",

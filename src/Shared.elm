@@ -9,8 +9,10 @@ module Shared exposing
     )
 
 import App.Orders.Type exposing (Order)
+import App.Payments.Type exposing (Payment)
 import App.Products.Type exposing (Product)
 import App.Shared.OrderGraphQL as OrderGraphQL exposing (OrderConnection, OrderEdge)
+import App.Shared.PaymentGraphQL as PaymentGraphQL exposing (PaymentConnection, PaymentEdge)
 import App.Shared.ProductGraphQL exposing (ProductConnection, ProductEdge, query)
 import Array exposing (Array)
 import Graphql.Http
@@ -31,6 +33,10 @@ type alias OrderResponse =
     RemoteData (Graphql.Http.Error OrderConnection) OrderConnection
 
 
+type alias PaymentResponse =
+    RemoteData (Graphql.Http.Error PaymentConnection) PaymentConnection
+
+
 type alias Feature entity response =
     { status : response
     , list : List entity
@@ -40,6 +46,7 @@ type alias Feature entity response =
 type alias Model =
     { products : Feature Product ProductResponse
     , orders : Feature Order OrderResponse
+    , payments : Feature Payment PaymentResponse
     }
 
 
@@ -57,21 +64,26 @@ getOrders =
         |> Graphql.Http.send (RemoteData.fromResult >> GotOrders)
 
 
+getPayments : Cmd Msg
+getPayments =
+    PaymentGraphQL.query
+        |> Graphql.Http.queryRequest "http://84.232.145.86:5100/graph"
+        |> Graphql.Http.send (RemoteData.fromResult >> GotPayments)
+
+
 type Msg
     = GotProducts ProductResponse
     | GotOrders OrderResponse
+    | GotPayments PaymentResponse
 
 
 init : Request -> Flags -> ( Model, Cmd Msg )
 init _ _ =
     let
-        initialProducts =
-            { status = RemoteData.Loading, list = [] }
-
-        initialOrders =
+        initial =
             { status = RemoteData.Loading, list = [] }
     in
-    ( { products = initialProducts, orders = initialOrders }, Cmd.batch [ getProducts, getOrders ] )
+    ( { products = initial, orders = initial, payments = initial }, Cmd.batch [ getProducts, getOrders, getPayments ] )
 
 
 changeProducts : Model -> ProductResponse -> List ProductEdge -> Model
@@ -84,6 +96,12 @@ changeOrders : Model -> OrderResponse -> List OrderEdge -> Model
 changeOrders model response orders =
     { status = response, list = mapOrders orders }
         |> (\newOrders -> { model | orders = newOrders })
+
+
+changePayments : Model -> PaymentResponse -> List PaymentEdge -> Model
+changePayments model response payments =
+    { status = response, list = mapPayments payments }
+        |> (\newPayments -> { model | payments = newPayments })
 
 
 update : Request -> Msg -> Model -> ( Model, Cmd Msg )
@@ -105,6 +123,14 @@ update _ msg model =
                 _ ->
                     ( { model | orders = { list = model.orders.list, status = response } }, Cmd.none )
 
+        GotPayments response ->
+            case response of
+                Success payments ->
+                    ( changePayments model response payments.edges, Cmd.none )
+
+                _ ->
+                    ( { model | payments = { list = model.payments.list, status = response } }, Cmd.none )
+
 
 subscriptions : Request -> Model -> Sub Msg
 subscriptions _ _ =
@@ -121,6 +147,12 @@ mapOrders : List OrderEdge -> List Order
 mapOrders edges =
     edges
         |> List.map (\edge -> { id = edge.node.id, quantity = edge.node.quantity, status = edge.node.status, productId = edge.node.productId })
+
+
+mapPayments : List PaymentEdge -> List Payment
+mapPayments edges =
+    edges
+        |> List.map (\edge -> { id = edge.node.id, status = edge.node.status, orderId = edge.node.orderId })
 
 
 getPseudoRandomImageUrl : ProductEdge -> String
