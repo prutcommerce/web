@@ -17,5 +17,5 @@ empty =
             [ Filled.inventory 100 (Color <| Color.rgb255 156 163 175) ]
         , div
             [ Attr.class "mt-3 text-3xl font-bold tracking-tight text-gray-400 sm:text-4xl" ]
-            [ h3 [] [ text "Oops, something went wrong" ] ]
+            [ h3 [] [ text "Sorry, there's no content to display" ] ]
         ]

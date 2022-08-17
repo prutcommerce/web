@@ -4,6 +4,7 @@ import Browser.Navigation exposing (Key)
 import Effect exposing (Effect)
 import ElmSpa.Page
 import Gen.Params.Home_
+import Gen.Params.Payments
 import Gen.Params.Products
 import Gen.Params.Products.Id_
 import Gen.Params.NotFound
@@ -12,6 +13,7 @@ import Gen.Msg as Msg
 import Gen.Route as Route exposing (Route)
 import Page exposing (Page)
 import Pages.Home_
+import Pages.Payments
 import Pages.Products
 import Pages.Products.Id_
 import Pages.NotFound
@@ -36,6 +38,9 @@ init route =
         Route.Home_ ->
             pages.home_.init ()
     
+        Route.Payments ->
+            pages.payments.init ()
+    
         Route.Products ->
             pages.products.init ()
     
@@ -49,6 +54,9 @@ init route =
 update : Msg -> Model -> Shared.Model -> Url -> Key -> ( Model, Effect Msg )
 update msg_ model_ =
     case ( msg_, model_ ) of
+        ( Msg.Payments msg, Model.Payments params model ) ->
+            pages.payments.update params msg model
+    
         ( Msg.Products msg, Model.Products params model ) ->
             pages.products.update params msg model
     
@@ -67,6 +75,9 @@ view model_ =
     
         Model.Home_ params ->
             pages.home_.view params ()
+    
+        Model.Payments params model ->
+            pages.payments.view params model
     
         Model.Products params model ->
             pages.products.view params model
@@ -87,6 +98,9 @@ subscriptions model_ =
         Model.Home_ params ->
             pages.home_.subscriptions params ()
     
+        Model.Payments params model ->
+            pages.payments.subscriptions params model
+    
         Model.Products params model ->
             pages.products.subscriptions params model
     
@@ -103,12 +117,14 @@ subscriptions model_ =
 
 pages :
     { home_ : Static Gen.Params.Home_.Params
+    , payments : Bundle Gen.Params.Payments.Params Pages.Payments.Model Pages.Payments.Msg
     , products : Bundle Gen.Params.Products.Params Pages.Products.Model Pages.Products.Msg
     , products__id_ : Bundle Gen.Params.Products.Id_.Params Pages.Products.Id_.Model Pages.Products.Id_.Msg
     , notFound : Static Gen.Params.NotFound.Params
     }
 pages =
     { home_ = static Pages.Home_.view Model.Home_
+    , payments = bundle Pages.Payments.page Model.Payments Msg.Payments
     , products = bundle Pages.Products.page Model.Products Msg.Products
     , products__id_ = bundle Pages.Products.Id_.page Model.Products__Id_ Msg.Products__Id_
     , notFound = static Pages.NotFound.view Model.NotFound

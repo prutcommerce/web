@@ -50,6 +50,11 @@ layout children =
                                     , Attr.class "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                                     ]
                                     [ text "Orders" ]
+                                , a
+                                    [ Attr.href "/payments"
+                                    , Attr.class "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                                    ]
+                                    [ text "Payments" ]
                                 ]
                             ]
                         ]
