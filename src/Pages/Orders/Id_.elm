@@ -1,13 +1,17 @@
 module Pages.Orders.Id_ exposing (Model, Msg, page)
 
 import App.Layout exposing (layout)
+import App.Notifications exposing (displayNotification)
 import App.Orders.Type exposing (Order)
 import App.Products.Type exposing (Product)
+import App.Shared.PaymentGraphQL exposing (PaymentNode, mutation)
 import Gen.Params.Orders.Id_ exposing (Params)
+import Graphql.Http
 import Html exposing (..)
 import Html.Attributes as Attr
-import Html.Events exposing (onInput)
+import Html.Events exposing (onClick, onInput)
 import Page
+import RemoteData exposing (RemoteData(..))
 import Request
 import Shared
 import View exposing (View)
@@ -33,12 +37,17 @@ type alias Model =
     , cardCvv : String
     , cardExpiryYear : Int
     , cardExpiryMonth : Int
+    , status : Response
     }
+
+
+type alias Response =
+    RemoteData (Graphql.Http.Error PaymentNode) PaymentNode
 
 
 init : Request.With Params -> ( Model, Cmd Msg )
 init request =
-    ( { id = request.params.id, cardNumber = "", cardCvv = "", cardExpiryMonth = 8, cardExpiryYear = 2022 }, Cmd.none )
+    ( { id = request.params.id, cardNumber = "", cardCvv = "", cardExpiryMonth = 8, cardExpiryYear = 2023, status = RemoteData.NotAsked }, Cmd.none )
 
 
 
@@ -50,6 +59,15 @@ type Msg
     | ChangeCardCvv String
     | ChangeCardExpiryMonth String
     | ChangeCardExpiryYear String
+    | CreatePayment
+    | PaymentCreated Response
+
+
+sendRequest : Model -> Cmd Msg
+sendRequest model =
+    mutation model.id model.cardNumber model.cardCvv model.cardExpiryYear model.cardExpiryMonth
+        |> Graphql.Http.mutationRequest "http://84.232.145.86:5100/graph"
+        |> Graphql.Http.send (RemoteData.fromResult >> PaymentCreated)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -75,6 +93,45 @@ update msg model =
                     ( { model | cardExpiryYear = newValue }, Cmd.none )
 
                 Nothing ->
+                    ( model, Cmd.none )
+
+        CreatePayment ->
+            ( model, sendRequest model )
+
+        PaymentCreated response ->
+            case response of
+                Failure error ->
+                    case error of
+                        Graphql.Http.GraphqlError _ graphqlErrors ->
+                            let
+                                errorString =
+                                    graphqlErrors
+                                        |> List.map (\graphError -> graphError.message)
+                                        |> String.join "\n"
+                            in
+                            ( { model | status = response }, displayNotification errorString )
+
+                        Graphql.Http.HttpError httpError ->
+                            case httpError of
+                                Graphql.Http.BadUrl string ->
+                                    ( { model | status = response }, displayNotification ("Bad url: " ++ string) )
+
+                                Graphql.Http.Timeout ->
+                                    ( { model | status = response }, displayNotification "Server timeout" )
+
+                                Graphql.Http.NetworkError ->
+                                    ( { model | status = response }, displayNotification "Network error" )
+
+                                Graphql.Http.BadStatus metadata string ->
+                                    ( { model | status = response }, displayNotification ("Bad status: " ++ metadata.statusText) )
+
+                                Graphql.Http.BadPayload _ ->
+                                    ( { model | status = response }, displayNotification "Bad payload" )
+
+                Success a ->
+                    ( { model | status = response }, displayNotification "Payment created!" )
+
+                _ ->
                     ( model, Cmd.none )
 
 
@@ -123,7 +180,7 @@ getCurrentProduct shared productId =
 
 isSubmitDisabled : Model -> Bool
 isSubmitDisabled model =
-    model.cardCvv == "" || model.cardNumber == ""
+    model.cardCvv == "" || model.cardNumber == "" || not (String.length model.cardNumber == 16) || not (String.length model.cardCvv == 3)
 
 
 body : Shared.Model -> Model -> List (Html Msg)
@@ -331,8 +388,8 @@ body shared model =
                                     , div
                                         [ Attr.class "px-4 py-3 bg-gray-50 text-right sm:px-6"
                                         ]
-                                        [ button
-                                            [ Attr.type_ "submit"
+                                        [ a
+                                            [ Attr.href "#"
                                             , Attr.class
                                                 ("inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                                     ++ (if isSubmitDisabled model then
@@ -343,6 +400,7 @@ body shared model =
                                                        )
                                                 )
                                             , Attr.disabled (isSubmitDisabled model)
+                                            , onClick CreatePayment
                                             ]
                                             [ text "Pay" ]
                                         ]

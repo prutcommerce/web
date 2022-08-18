@@ -1,12 +1,13 @@
 module App.Shared.PaymentGraphQL exposing (..)
 
+import Evander.Mutation as Mutation exposing (CreatePaymentRequiredArguments)
 import Evander.Object
 import Evander.Object.Payment as Payment
 import Evander.Object.PaymentConnection as Connection
 import Evander.Object.PaymentEdge as Edge
 import Evander.Query as Query exposing (PaymentsOptionalArguments)
 import Evander.Scalar exposing (Id(..))
-import Graphql.Operation exposing (RootQuery)
+import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 
@@ -63,3 +64,13 @@ arguments _ =
 query : SelectionSet PaymentConnection RootQuery
 query =
     Query.payments arguments connectionSelection
+
+
+mutationArguments : String -> String -> String -> Int -> Int -> CreatePaymentRequiredArguments
+mutationArguments id cardNumber cardCvv cardExpiryYear cardExpiryMonth =
+    { payment = { orderId = Id id, cardNumber = cardNumber, cardCvv = cardCvv, cardExpiryYear = cardExpiryYear, cardExpiryMonth = cardExpiryMonth } }
+
+
+mutation : String -> String -> String -> Int -> Int -> SelectionSet PaymentNode RootMutation
+mutation id cardNumber cardCvv cardExpiryYear cardExpiryMonth =
+    Mutation.createPayment (mutationArguments id cardNumber cardCvv cardExpiryYear cardExpiryMonth) nodeSelection
