@@ -9,6 +9,7 @@ module Shared exposing
     , update
     )
 
+import App.Notifications exposing (updates)
 import App.Orders.Type exposing (Order)
 import App.Payments.Type exposing (Payment)
 import App.Products.Type exposing (Product)
@@ -76,6 +77,7 @@ type Msg
     = GotProducts ProductResponse
     | GotOrders OrderResponse
     | GotPayments PaymentResponse
+    | Refetch String
 
 
 init : Request -> Flags -> ( Model, Cmd Msg )
@@ -132,10 +134,13 @@ update _ msg model =
                 _ ->
                     ( { model | payments = { list = model.payments.list, status = response } }, Cmd.none )
 
+        Refetch _ ->
+            ( model, Cmd.batch [ getProducts, getOrders, getPayments ] )
+
 
 subscriptions : Request -> Model -> Sub Msg
 subscriptions _ _ =
-    Sub.none
+    updates Refetch
 
 
 mapProducts : List ProductEdge -> List Product

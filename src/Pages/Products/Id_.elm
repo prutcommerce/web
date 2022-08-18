@@ -1,7 +1,7 @@
 module Pages.Products.Id_ exposing (Model, Msg(..), page)
 
 import App.Layout exposing (layout)
-import App.Notifications exposing (displayNotification)
+import App.Notifications exposing (displayNotification, updateSharedState)
 import App.Products.Type exposing (Product)
 import App.Shared.OrderGraphQL exposing (OrderNode, mutation)
 import Gen.Params.Products.Id_ exposing (Params)
@@ -77,7 +77,7 @@ update msg model =
                                     ( { model | status = response }, displayNotification "Bad payload" )
 
                 Success a ->
-                    ( { model | status = response }, displayNotification "Order created!" )
+                    ( { model | status = response }, Cmd.batch [ displayNotification "Order created!", updateSharedState () ] )
 
                 _ ->
                     ( model, Cmd.none )

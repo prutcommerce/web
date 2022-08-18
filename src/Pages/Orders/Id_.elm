@@ -1,7 +1,7 @@
 module Pages.Orders.Id_ exposing (Model, Msg, page)
 
 import App.Layout exposing (layout)
-import App.Notifications exposing (displayNotification)
+import App.Notifications exposing (displayNotification, updateSharedState)
 import App.Orders.Type exposing (Order)
 import App.Products.Type exposing (Product)
 import App.Shared.PaymentGraphQL exposing (PaymentNode, mutation)
@@ -129,7 +129,7 @@ update msg model =
                                     ( { model | status = response }, displayNotification "Bad payload" )
 
                 Success a ->
-                    ( { model | status = response }, displayNotification "Payment created!" )
+                    ( { model | status = response }, Cmd.batch [ displayNotification "Payment created!", updateSharedState () ] )
 
                 _ ->
                     ( model, Cmd.none )
