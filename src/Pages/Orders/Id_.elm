@@ -3,10 +3,10 @@ module Pages.Orders.Id_ exposing (Model, Msg, page)
 import App.Layout exposing (layout)
 import App.Orders.Type exposing (Order)
 import App.Products.Type exposing (Product)
-import Debug exposing (toString)
 import Gen.Params.Orders.Id_ exposing (Params)
 import Html exposing (..)
 import Html.Attributes as Attr
+import Html.Events exposing (onInput)
 import Page
 import Request
 import Shared
@@ -28,12 +28,17 @@ page shared req =
 
 
 type alias Model =
-    { id : String }
+    { id : String
+    , cardNumber : String
+    , cardCvv : String
+    , cardExpiryYear : Int
+    , cardExpiryMonth : Int
+    }
 
 
 init : Request.With Params -> ( Model, Cmd Msg )
 init request =
-    ( { id = request.params.id }, Cmd.none )
+    ( { id = request.params.id, cardNumber = "", cardCvv = "", cardExpiryMonth = 8, cardExpiryYear = 2022 }, Cmd.none )
 
 
 
@@ -41,14 +46,36 @@ init request =
 
 
 type Msg
-    = ReplaceMe
+    = ChangeCardNumber String
+    | ChangeCardCvv String
+    | ChangeCardExpiryMonth String
+    | ChangeCardExpiryYear String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ReplaceMe ->
-            ( model, Cmd.none )
+        ChangeCardNumber value ->
+            ( { model | cardNumber = value }, Cmd.none )
+
+        ChangeCardCvv value ->
+            ( { model | cardCvv = value }, Cmd.none )
+
+        ChangeCardExpiryMonth value ->
+            case String.toInt value of
+                Just newValue ->
+                    ( { model | cardExpiryMonth = newValue }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        ChangeCardExpiryYear value ->
+            case String.toInt value of
+                Just newValue ->
+                    ( { model | cardExpiryYear = newValue }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
 
 
@@ -94,7 +121,12 @@ getCurrentProduct shared productId =
             { id = "", name = "", url = "" }
 
 
-body : Shared.Model -> Model -> List (Html msg)
+isSubmitDisabled : Model -> Bool
+isSubmitDisabled model =
+    model.cardCvv == "" || model.cardNumber == ""
+
+
+body : Shared.Model -> Model -> List (Html Msg)
 body shared model =
     let
         currentOrder =
@@ -233,8 +265,10 @@ body shared model =
                                                 , input
                                                     [ Attr.type_ "text"
                                                     , Attr.name "card-number"
+                                                    , Attr.value model.cardNumber
                                                     , Attr.id "card-number"
                                                     , Attr.class "mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    , onInput ChangeCardNumber
                                                     ]
                                                     []
                                                 ]
@@ -249,8 +283,10 @@ body shared model =
                                                 , input
                                                     [ Attr.type_ "text"
                                                     , Attr.name "card-cvv"
+                                                    , Attr.value model.cardCvv
                                                     , Attr.id "card-cvv"
                                                     , Attr.class "mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    , onInput ChangeCardCvv
                                                     ]
                                                     []
                                                 ]
@@ -265,8 +301,10 @@ body shared model =
                                                 , input
                                                     [ Attr.type_ "number"
                                                     , Attr.name "card-expiry-year"
+                                                    , Attr.value (String.fromInt model.cardExpiryYear)
                                                     , Attr.id "card-expiry-year"
                                                     , Attr.class "mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    , onInput ChangeCardExpiryYear
                                                     ]
                                                     []
                                                 ]
@@ -281,8 +319,10 @@ body shared model =
                                                 , input
                                                     [ Attr.type_ "number"
                                                     , Attr.name "card-expiry-month"
+                                                    , Attr.value (String.fromInt model.cardExpiryMonth)
                                                     , Attr.id "card-expiry-month"
                                                     , Attr.class "mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    , onInput ChangeCardExpiryMonth
                                                     ]
                                                     []
                                                 ]
@@ -293,7 +333,16 @@ body shared model =
                                         ]
                                         [ button
                                             [ Attr.type_ "submit"
-                                            , Attr.class "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                            , Attr.class
+                                                ("inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                    ++ (if isSubmitDisabled model then
+                                                            " disabled"
+
+                                                        else
+                                                            ""
+                                                       )
+                                                )
+                                            , Attr.disabled (isSubmitDisabled model)
                                             ]
                                             [ text "Pay" ]
                                         ]
