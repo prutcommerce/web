@@ -67,6 +67,7 @@ sendRequest : Model -> Cmd Msg
 sendRequest model =
     mutation model.id model.cardNumber model.cardCvv model.cardExpiryYear model.cardExpiryMonth
         |> Graphql.Http.mutationRequest "http://84.232.145.86:5100/graph"
+        |> Graphql.Http.withTimeout 5000
         |> Graphql.Http.send (RemoteData.fromResult >> PaymentCreated)
 
 

@@ -56,6 +56,7 @@ getProducts : Cmd Msg
 getProducts =
     query
         |> Graphql.Http.queryRequest "http://84.232.145.86:5000/graph"
+        |> Graphql.Http.withTimeout 5000
         |> Graphql.Http.send (RemoteData.fromResult >> GotProducts)
 
 
@@ -63,6 +64,7 @@ getOrders : Cmd Msg
 getOrders =
     OrderGraphQL.query
         |> Graphql.Http.queryRequest "http://84.232.145.86:5050/graph"
+        |> Graphql.Http.withTimeout 5000
         |> Graphql.Http.send (RemoteData.fromResult >> GotOrders)
 
 
@@ -70,6 +72,7 @@ getPayments : Cmd Msg
 getPayments =
     PaymentGraphQL.query
         |> Graphql.Http.queryRequest "http://84.232.145.86:5100/graph"
+        |> Graphql.Http.withTimeout 5000
         |> Graphql.Http.send (RemoteData.fromResult >> GotPayments)
 
 

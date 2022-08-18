@@ -35,6 +35,7 @@ sendRequest : Model -> Cmd Msg
 sendRequest model =
     mutation model.id
         |> Graphql.Http.mutationRequest "http://84.232.145.86:5050/graph"
+        |> Graphql.Http.withTimeout 5000
         |> Graphql.Http.send (RemoteData.fromResult >> OrderCreated)
 
 
